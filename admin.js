@@ -71,11 +71,59 @@ function logout() {
     firebase.auth().signOut()
         .then(() => {
             hideAdminPanel();
+// Update login function with better error handling and debugging
+function login() {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    
+    // Show loading state
+    document.getElementById('loginButton').disabled = true;
+    document.getElementById('loginButton').textContent = 'Logging in...';
+    
+    console.log('Attempting login...'); // Debug log
+    
+    firebase.auth().signInWithEmailAndPassword(email, password)
+        .then((userCredential) => {
+            console.log('Login successful!'); // Debug log
+            showAdminPanel();
         })
         .catch((error) => {
-            alert('Logout failed: ' + error.message);
+            console.error('Login error:', error); // Debug log
+            let errorMessage;
+            switch (error.code) {
+                case 'auth/invalid-email':
+                    errorMessage = 'Invalid email address format';
+                    break;
+                case 'auth/user-not-found':
+                    errorMessage = 'No account found with this email';
+                    break;
+                case 'auth/wrong-password':
+                    errorMessage = 'Incorrect password';
+                    break;
+                case 'auth/too-many-requests':
+                    errorMessage = 'Too many failed attempts. Please try again later';
+                    break;
+                default:
+                    errorMessage = error.message;
+            }
+            showError(errorMessage);
+        })
+        .finally(() => {
+            // Reset button state
+            document.getElementById('loginButton').disabled = false;
+            document.getElementById('loginButton').textContent = 'Login';
         });
 }
+
+// Add this to verify Firebase initialization
+window.onload = function() {
+    console.log('Checking Firebase initialization...');
+    if (firebase.apps.length) {
+        console.log('Firebase initialized successfully');
+    } else {
+        console.error('Firebase not initialized');
+    }
+};
 
 // Add auth state listener
 firebase.auth().onAuthStateChanged((user) => {
