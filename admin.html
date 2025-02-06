@@ -45,38 +45,32 @@
         <div class="admin-container">
             <!-- Left side: Level list -->
             <div class="level-list-container">
-                <h3>Current Levels</h3>
-                <div id="levelList" class="sortable-list">
-                    <!-- Levels will be loaded here -->
-                </div>
-                <button onclick="saveOrder()">Save Order</button>
-            </div>
-
-            <!-- Right side: Add new level form -->
-            <div class="new-level-container">
-                <h3>Add New Level</h3>
-                <form id="newLevelForm">
-                    <input type="text" id="levelName" placeholder="Level Name" required>
-                    <input type="text" id="levelId" placeholder="Level ID" required>
-                    <input type="text" id="levelAuthor" placeholder="Author" required>
-                    <input type="text" id="levelVerifier" placeholder="Verifier" required>
-                    <input type="url" id="levelVideo" placeholder="Video URL" required>
-                    <input type="url" id="levelSong" placeholder="Song URL (optional)">
-                    <select id="levelType" required>
-                        <option value="Challenge">Challenge</option>
-                        <option value="Level">Level</option>
-                    </select>
-                    <button type="submit">Add Level</button>
-                </form>
-                
-                <div id="pendingLevels" class="pending-levels">
-                    <h4>Pending Levels</h4>
-                    <!-- Newly added levels will appear here -->
-                </div>
-            </div>
-        </div>
+    <h3>Current Levels</h3>
+    <div id="levelList" class="sortable-list">
+        <!-- Levels will be loaded here -->
     </div>
+    <button onclick="saveOrder()">Save Order</button>
+    <div class="pending-levels">
+        <h3>Pending Levels</h3>
+        <!-- Newly added levels will appear here -->
+    </div>
+</div>
 
-    <script src="admin.js"></script>
-</body>
+<!-- Right side: Add new level form -->
+<div class="new-level-container">
+    <h3>Add New Level</h3>
+    <form id="newLevelForm">
+        <input type="text" id="levelName" placeholder="Level Name" required>
+        <input type="text" id="levelId" placeholder="Level ID" required>
+        <input type="text" id="levelAuthor" placeholder="Author" required>
+        <input type="text" id="levelVerifier" placeholder="Verifier" required>
+        <input type="url" id="levelVideo" placeholder="Video URL" required>
+        <input type="url" id="levelSong" placeholder="Song URL (optional)">
+        <select id="levelType" required>
+            <option value="Challenge">Challenge</option>
+            <option value="Level">Level</option>
+        </select>
+        <button type="submit">Add Level</button>
+    </form>
+</div>
 </html> 
