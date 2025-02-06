@@ -421,38 +421,6 @@ function handleDragEnd(e) {
     }
 }
 
-// Modify the existing event listeners
-function displayLevels(levels) {
-    const levelList = document.getElementById('levelList');
-    levelList.innerHTML = '';
-
-    // Update each level display with a correct numbering starting from 1 at the top
-    levels.forEach((level, index) => {
-        const item = document.createElement('div');
-        item.className = 'level-item';
-        item.draggable = true;
-        item.dataset.index = index;
-        item.dataset.level = JSON.stringify(level);
-        
-        item.innerHTML = `
-            <span class="handle">☰</span>
-            <span>#${index + 1}. ${level.name} by ${level.author}</span>
-            <div class="level-actions">
-                <button class="edit-btn" onclick="editLevel(${index})">Edit</button>
-                <button class="delete-btn" onclick="deleteLevel(${index})">×</button>
-            </div>
-        `;
-
-        item.addEventListener('dragstart', handleDragStart);
-        item.addEventListener('dragover', handleDragOver);
-        item.addEventListener('dragleave', handleDragLeave);
-        item.addEventListener('dragend', handleDragEnd);
-        item.addEventListener('drop', handleDrop);
-
-        levelList.appendChild(item);
-    });
-}
-
 // Modify handleDrop to work with pending levels
 function handleDrop(e) {
     e.preventDefault();
