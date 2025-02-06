@@ -120,7 +120,9 @@ function displayLevels(levels) {
         `;
 
         item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragend', handleDragEnd);
         item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('dragleave', handleDragLeave);
         item.addEventListener('drop', handleDrop);
 
         levelList.appendChild(item);
@@ -253,19 +255,35 @@ document.getElementById('newLevelForm').addEventListener('submit', function(e) {
         type: document.getElementById('levelType').value
     };
 
-    firebase.database().ref('levels').once('value')
-        .then((snapshot) => {
-            const levels = snapshot.val() || [];
-            levels.push(newLevel);
-            return firebase.database().ref('levels').set(levels);
-        })
-        .then(() => {
-            this.reset();
-            loadLevels();
-        })
-        .catch((error) => {
-            alert('Error adding level: ' + error.message);
-        });
+    // Create pending level item
+    const pendingItem = document.createElement('div');
+    pendingItem.className = 'pending-level-item';
+    pendingItem.draggable = true;
+    pendingItem.dataset.level = JSON.stringify(newLevel);
+    
+    pendingItem.innerHTML = `
+        <span class="handle">☰</span>
+        <span>${newLevel.name} by ${newLevel.author}</span>
+    `;
+
+    pendingItem.addEventListener('dragstart', handleDragStart);
+    pendingItem.addEventListener('dragend', handleDragEnd);
+    
+    // Add to pending levels
+    const pendingLevels = document.querySelector('.pending-levels');
+    if (!pendingLevels) {
+        // Create pending levels container if it doesn't exist
+        const container = document.createElement('div');
+        container.className = 'pending-levels';
+        container.innerHTML = '<h3>Pending Levels</h3>';
+        document.querySelector('.level-list-container').appendChild(container);
+        container.appendChild(pendingItem);
+    } else {
+        pendingLevels.appendChild(pendingItem);
+    }
+    
+    // Reset form
+    this.reset();
 });
 
 // Show admin panel
@@ -281,25 +299,82 @@ function hideAdminPanel() {
     document.getElementById('adminPanel').style.display = 'none';
 }
 
-// Drag and drop functionality
+// Enhanced drag and drop functionality
 let draggedItem = null;
+let dragImage = null;
 
 function handleDragStart(e) {
     draggedItem = this;
+    
+    // Create ghost image
+    dragImage = this.cloneNode(true);
+    dragImage.style.position = 'absolute';
+    dragImage.style.top = '-1000px';
+    dragImage.style.opacity = '0.8';
+    dragImage.style.pointerEvents = 'none';
+    dragImage.style.width = this.offsetWidth + 'px';
+    document.body.appendChild(dragImage);
+    
+    e.dataTransfer.setDragImage(dragImage, 0, 0);
     e.dataTransfer.effectAllowed = 'move';
+    
+    // Add dragging class for visual feedback
+    this.classList.add('dragging');
+    
+    // Track mouse position
+    document.addEventListener('dragover', updateDragImage);
+}
+
+function updateDragImage(e) {
+    if (dragImage) {
+        dragImage.style.top = (e.pageY - 20) + 'px';
+        dragImage.style.left = (e.pageX - 20) + 'px';
+    }
+}
+
+function handleDragEnd(e) {
+    this.classList.remove('dragging');
+    if (dragImage) {
+        dragImage.remove();
+        dragImage = null;
+    }
+    document.removeEventListener('dragover', updateDragImage);
 }
 
 function handleDragOver(e) {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
+    
+    const bounding = this.getBoundingClientRect();
+    const offset = bounding.y + (bounding.height/2);
+    
+    if (e.clientY - offset > 0) {
+        this.style.borderBottom = 'solid 2px #007bff';
+        this.style.borderTop = '';
+    } else {
+        this.style.borderTop = 'solid 2px #007bff';
+        this.style.borderBottom = '';
+    }
+}
+
+function handleDragLeave(e) {
+    this.style.borderTop = '';
+    this.style.borderBottom = '';
 }
 
 function handleDrop(e) {
     e.preventDefault();
+    this.style.borderTop = '';
+    this.style.borderBottom = '';
+    
     if (this !== draggedItem) {
         const allItems = [...document.getElementsByClassName('level-item')];
         const draggedIdx = allItems.indexOf(draggedItem);
         const droppedIdx = allItems.indexOf(this);
+        
+        const bounding = this.getBoundingClientRect();
+        const offset = bounding.y + (bounding.height/2);
+        const insertAfter = e.clientY - offset > 0;
 
         firebase.database().ref('levels').once('value')
             .then((snapshot) => {
@@ -308,11 +383,15 @@ function handleDrop(e) {
                 if (draggedIdx === -1) {
                     // If dragging from pending levels
                     const newLevel = JSON.parse(draggedItem.dataset.level);
-                    levels.splice(droppedIdx, 0, newLevel);
+                    const insertIdx = insertAfter ? droppedIdx + 1 : droppedIdx;
+                    levels.splice(insertIdx, 0, newLevel);
                 } else {
                     // Regular reordering
                     const [movedItem] = levels.splice(draggedIdx, 1);
-                    levels.splice(droppedIdx, 0, movedItem);
+                    const insertIdx = insertAfter ? 
+                        (droppedIdx > draggedIdx ? droppedIdx : droppedIdx + 1) : 
+                        (droppedIdx < draggedIdx ? droppedIdx : droppedIdx - 1);
+                    levels.splice(insertIdx, 0, movedItem);
                 }
                 
                 return firebase.database().ref('levels').set(levels);
@@ -324,19 +403,7 @@ function handleDrop(e) {
                 loadLevels();
             })
             .catch((error) => {
-                alert('Error updating order: ' + error.message);
+                showError('Error updating order: ' + error.message);
             });
     }
-}
-
-// Update database security rules in Firebase Console:
-/*
-{
-  "rules": {
-    "levels": {
-      ".read": true,
-      ".write": "auth != null"
-    }
-  }
-}
-*/ 
+                          }
