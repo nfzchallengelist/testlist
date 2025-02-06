@@ -237,50 +237,6 @@ function cancelEdit() {
     loadLevels();
 }
 
-function deleteLevel(index) {
-    // Example of Firebase delete operation; make sure to adapt according to your setup
-    const levelList = document.getElementById('levelList');
-    const levelToDelete = levelList.children[index];
-
-    if (!levelToDelete) {
-        console.error(`Level at index ${index} does not exist.`);
-        return; // Exit the function if level does not exist
-    }
-    
-    // Assume levels is an array in your database reference
-    const levelId = JSON.parse(levelToDelete.dataset.level).id; // Assuming you stored the level data in dataset
-    
-    firebase.database().ref('levels/' + levelId).remove()
-        .then(() => {
-            console.log("Level Deleted Successfully.");
-            levelList.removeChild(levelToDelete); // Remove from the UI
-        })
-        .catch(error => {
-            console.error("Error deleting level: ", error);
-        });
-        setTimeout(() => {
-        levelList.removeChild(levelToDelete); // Ensuring this runs separate from the main call
-    }, 0);
-}
-
-async function deleteLevel(index) {
-    const levelList = document.getElementById('levelList');
-    const levelToDelete = levelList.children[index];
-
-    if (!levelToDelete) {
-        console.error(`Level at index ${index} does not exist.`);
-        return;
-    }
-    const levelId = JSON.parse(levelToDelete.dataset.level).id;
-
-    try {
-        await firebase.database().ref('levels/' + levelId).remove();
-        console.log("Level Deleted Successfully.");
-        levelList.removeChild(levelToDelete);
-    } catch (error) {
-        console.error("Error deleting level: ", error);
-    }
-}
 
 // Modified save order function
 function saveOrder() {
@@ -474,7 +430,20 @@ function handleDrop(e) {
     }
 }
 
-
+function deleteLevel(index) {
+    firebase.database().ref('levels').once('value')
+        .then((snapshot) => {
+            const levels = snapshot.val() || [];
+            levels.splice(index, 1); // Remove the level at the specified index
+            return firebase.database().ref('levels').set(levels); // Update the database
+        })
+        .then(() => {
+            loadLevels(); // Reload the levels to reflect the changes
+        })
+        .catch((error) => {
+            alert('Error deleting level: ' + error.message);
+        });
+}
 
 // Update database security rules in Firebase Console:
 /*
