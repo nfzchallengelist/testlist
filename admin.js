@@ -7,7 +7,7 @@ const firebaseConfig = {
     storageBucket: "nfz-challenge-list.firebasestorage.app",
     messagingSenderId: "198735596214",
     appId: "1:198735596214:web:615e8e919c4d19e446b417"
-};
+  };
 
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
@@ -66,11 +66,16 @@ function login() {
         });
 }
 
-// Update logout function
 function logout() {
     firebase.auth().signOut()
         .then(() => {
             hideAdminPanel();
+        }) // Close the .then() block here
+        .catch((error) => {
+            console.error("Logout error:", error);
+        });
+}
+
 // Update login function with better error handling and debugging
 function login() {
     const email = document.getElementById('email').value;
@@ -136,16 +141,21 @@ firebase.auth().onAuthStateChanged((user) => {
 
 // Modified load levels function
 function loadLevels() {
+    console.log("loadLevels() called"); // Check if the function is called
+
     firebase.database().ref('levels').once('value')
         .then((snapshot) => {
+            console.log("Data from Firebase:", snapshot.val()); // Check the raw data
+
             const levels = snapshot.val() || [];
+            console.log("Levels array:", levels); // Check the processed array
+
             displayLevels(levels);
         })
         .catch((error) => {
-            console.error("Error loading levels:", error);
+            console.error("Error loading levels:", error); // Check for errors
         });
 }
-
 // Modified display levels function with edit capability
 function displayLevels(levels) {
     const levelList = document.getElementById('levelList');
@@ -454,4 +464,4 @@ function handleDrop(e) {
                 showError('Error updating order: ' + error.message);
             });
     }
-                          }
+}

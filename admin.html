@@ -41,36 +41,113 @@
     <div id="adminPanel" class="panel" style="display: none;">
         <h2>Level Management</h2>
         <button onclick="logout()" class="logout-btn">Logout</button>
-        
         <div class="admin-container">
-            <!-- Left side: Level list -->
             <div class="level-list-container">
-    <h3>Current Levels</h3>
-    <div id="levelList" class="sortable-list">
-        <!-- Levels will be loaded here -->
-    </div>
-    <button onclick="saveOrder()">Save Order</button>
-    <div class="pending-levels">
-        <h3>Pending Levels</h3>
-        <!-- Newly added levels will appear here -->
-    </div>
-</div>
+                <h3>Current Levels</h3>
+                <div id="levelList" class="sortable-list">
+                    </div>
+                <button onclick="saveOrder()">Save Order</button>
+                <div class="pending-levels">
+                    <h3>Pending Levels</h3>
+                    </div>
+            </div>
 
-<!-- Right side: Add new level form -->
-<div class="new-level-container">
-    <h3>Add New Level</h3>
-    <form id="newLevelForm">
-        <input type="text" id="levelName" placeholder="Level Name" required>
-        <input type="text" id="levelId" placeholder="Level ID" required>
-        <input type="text" id="levelAuthor" placeholder="Author" required>
-        <input type="text" id="levelVerifier" placeholder="Verifier" required>
-        <input type="url" id="levelVideo" placeholder="Video URL" required>
-        <input type="url" id="levelSong" placeholder="Song URL (optional)">
-        <select id="levelType" required>
-            <option value="Challenge">Challenge</option>
-            <option value="Level">Level</option>
-        </select>
-        <button type="submit">Add Level</button>
-    </form>
-</div>
-</html> 
+            <div class="new-level-container">
+                <h3>Add New Level</h3>
+                <form id="newLevelForm">
+                    <input type="text" id="levelName" placeholder="Level Name" required>
+                    <input type="text" id="levelId" placeholder="Level ID" required>
+                    <input type="text" id="levelAuthor" placeholder="Author" required>
+                    <input type="text" id="levelVerifier" placeholder="Verifier" required>
+                    <input type="url" id="levelVideo" placeholder="Video URL" required>
+                    <input type="url" id="levelSong" placeholder="Song URL (optional)">
+                    <select id="levelType" required>
+                        <option value="Challenge">Challenge</option>
+                        <option value="Level">Level</option>
+                    </select>
+                    <button type="submit">Add Level</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // *** IMPORTANT: Replace with your Firebase config ***
+        const firebaseConfig = {
+            apiKey: "AIzaSyDNOk2WBps9TmxzmSOqQt0WTCjP-YOKKpU",
+            authDomain: "nfz-challenge-list.firebaseapp.com",
+            databaseURL: "https://nfz-challenge-list-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "nfz-challenge-list",
+            storageBucket: "nfz-challenge-list.firebasestorage.app",
+            messagingSenderId: "198735596214",
+            appId: "1:198735596214:web:615e8e919c4d19e446b417"
+            };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL) // Or SESSION
+            .then(() => {
+                console.log("Persistence set successfully"); // Optional confirmation
+                // Now you can continue with your Firebase Auth code
+                // ... (your login(), logout(), onAuthStateChanged() functions)
+            })
+            .catch((error) => {
+                console.error("Error setting persistence:", error);
+                // Handle the error appropriately.  Perhaps show a message to the user.
+            });
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMessage = document.getElementById('errorMessage');
+            const loginButton = document.getElementById('loginButton');
+
+            errorMessage.style.display = 'none';
+            loginButton.disabled = true;
+            loginButton.classList.add('loading');
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                console.log("User logged in:", user);
+                showAdminPanel();
+            } catch (error) {
+                const errorCode = error.code;
+                const errorMessageText = error.message;
+                console.error("Login error:", errorCode, errorMessageText);
+                errorMessage.textContent = errorMessageText;
+                errorMessage.style.display = 'block';
+            } finally {
+                loginButton.disabled = false;
+                loginButton.classList.remove('loading');
+            }
+        }
+
+        function showAdminPanel() {
+            document.getElementById('loginPanel').style.display = 'none';
+            document.getElementById('adminPanel').style.display = 'block';
+        }
+
+        function logout() {
+            auth.signOut().then(() => {
+                document.getElementById('loginPanel').style.display = 'block';
+                document.getElementById('adminPanel').style.display = 'none';
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            }).catch((error) => {
+                console.error("Logout error:", error);
+            });
+        }
+
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                console.log("User is already logged in:", user);
+                showAdminPanel();
+            } else {
+                console.log("User is signed out");
+            }
+        });
+    </script>
+</body>
+</html>
