@@ -115,6 +115,7 @@ function displayPendingLevels(pendingLevels) {
     const pendingList = document.getElementById('pendingLevelList');
     pendingList.innerHTML = '';
 
+    // Add ascending number to display pending levels starting from 1
     pendingLevels.forEach((level, index) => {
         const item = document.createElement('div');
         item.className = 'level-item';
@@ -124,7 +125,7 @@ function displayPendingLevels(pendingLevels) {
         
         item.innerHTML = `
             <span class="handle">☰</span>
-            <span>${level.name} by ${level.author}</span>
+            <span>#${index + 1}. Pending Level: ${level.name} by ${level.author}</span>
             <div class="level-actions">
                 <button class="delete-btn" onclick="removePendingLevel(${index})">×</button>
             </div>
@@ -144,6 +145,7 @@ function displayLevels(levels) {
     const levelList = document.getElementById('levelList');
     levelList.innerHTML = '';
 
+    // Update each level display with a correct numbering starting from 1 at the top
     levels.forEach((level, index) => {
         const item = document.createElement('div');
         item.className = 'level-item';
@@ -153,7 +155,7 @@ function displayLevels(levels) {
         
         item.innerHTML = `
             <span class="handle">☰</span>
-            <span>${level.name} by ${level.author}</span>
+            <span>#${index + 1}. ${level.name} by ${level.author}</span>
             <div class="level-actions">
                 <button class="edit-btn" onclick="editLevel(${index})">Edit</button>
                 <button class="delete-btn" onclick="deleteLevel(${index})">×</button>
@@ -257,8 +259,8 @@ function deleteLevel(index) {
             console.error("Error deleting level: ", error);
         });
         setTimeout(() => {
-            levelList.removeChild(levelToDelete); // Ensuring this runs separate from the main call
-        }, 0);
+        levelList.removeChild(levelToDelete); // Ensuring this runs separate from the main call
+    }, 0);
 }
 
 async function deleteLevel(index) {
@@ -424,6 +426,7 @@ function displayLevels(levels) {
     const levelList = document.getElementById('levelList');
     levelList.innerHTML = '';
 
+    // Update each level display with a correct numbering starting from 1 at the top
     levels.forEach((level, index) => {
         const item = document.createElement('div');
         item.className = 'level-item';
@@ -433,7 +436,7 @@ function displayLevels(levels) {
         
         item.innerHTML = `
             <span class="handle">☰</span>
-            <span>${level.name} by ${level.author}</span>
+            <span>#${index + 1}. ${level.name} by ${level.author}</span>
             <div class="level-actions">
                 <button class="edit-btn" onclick="editLevel(${index})">Edit</button>
                 <button class="delete-btn" onclick="deleteLevel(${index})">×</button>
