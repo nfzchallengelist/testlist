@@ -1,0 +1,385 @@
+body {
+  height: 100vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-left: 0px;
+  margin-left: 0px;
+  background: linear-gradient(45deg, #000000, #111111, #222222, #1a1a1a);
+  background-size: 400% 400%;
+  background-attachment: fixed;
+  animation: gradientBG 15s ease infinite;
+  font-family: "Arial", serif;
+}
+
+.middle {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px;
+  margin-top: 60px;
+  align-items: center;
+}
+
+.list-editor {
+  /* Add necessary styles for list editor */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 200px;
+  background: #1d1d1d;
+  color: #ffffff;
+  padding: 20px;
+  z-index: 3;
+  text-align: center;
+}
+
+.list-item {
+  background: rgba(19, 19, 19, 0.95);
+  height: 160px;
+  width: 800px;
+  display: flex;
+  align-items: center;
+  column-gap: 16px;
+  border-radius: 2px;
+  padding: 0 16px;
+  box-sizing: border-box;
+  box-shadow: 4px 7px 2px 2px rgba(0, 0, 0, 0.61);
+  border: 4px solid #6B4E98;
+  transition: transform 0.2s, border 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.list-item:hover {
+  cursor: pointer;
+  transform: scale(1.05);
+  border: 4px solid #9D8CC0;
+}
+
+.list-number {
+  color: #dac1ff;
+  flex: 0.15;
+  padding: 0 16px;
+  font-size: 2.10rem;
+  font-weight: 600;
+  text-align: center;
+  margin-left: -30px;
+}
+
+.list-thumbnail {
+  display: flex;
+  min-width: 270px;
+  justify-content: center;
+  width: 270px;
+  overflow: hidden;
+  border: none;
+  margin-left: -30px;
+  margin-bottom: -4px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0);
+}
+
+.list-image {
+  max-width: 100%;
+  height: auto;
+}
+
+.list-info {
+  flex: 1;
+  padding: 16px 16px;
+  flex-direction: row-reverse;
+  row-gap: 10px;
+}
+
+.level-name {
+  color: #dac1ff;
+  font-size: 38px;
+  font-weight: 600;
+  transition: color 0.25s;
+  margin: 0;
+  align-items: center;
+}
+
+.level-info {
+  display: none; /* add this line */
+  flex: 1;
+  align-items: normal;
+}
+
+.level-id,
+.level-author,
+.level-verifier {
+  margin-top: 0px;
+  margin-bottom: 0px;
+  flex: 1;
+  color: #dac1ff;
+  font-size: 18px;
+}
+
+.level-id:before,
+.level-author:before,
+.level-verifier:before {
+  white-space: pre;
+  color: #dac1ff;
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.level-id:before {
+  content: "Level ID\a";
+}
+
+.level-author:before {
+  content: "Created by\a";
+}
+
+.level-verifier:before {
+  content: "Verified by\a";
+}
+
+/* Styles for the popup */
+.popup-container {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: -1%;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 3;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.5s;
+  animation-name: loadingAnim;
+  animation-duration: .5s;
+  animation-timing-function: ease-in-out;
+}
+
+.popup-content {
+  background: rgba(19, 19, 19, 0.95);
+  color: #dac1ff;
+  padding: 30px 50px;
+  box-shadow: 0 0 40px rgba(75, 45, 115, 0.3);
+  border-radius: 8px;
+  text-align: center;
+  position: relative;
+  transition: transform 0.5s;
+  animation-name: loadingAnim;
+  animation-duration: .5s;
+  animation-timing-function: ease-in-out;
+}
+
+.popup-title {
+  font-size: 0px;
+  margin-bottom: 30px;
+}
+
+.popup-info {
+  font-size: 20px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #dac1ff;
+}
+
+.popup-close {
+  background-color: #4B2D73;
+  color: #FFFFFF;
+  padding: 10px 20px;
+  border: 2px solid #6B4E98;
+  padding: 10px 20px;
+  font-weight: bold; /* Add font-weight: bold; for bold text */
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+  font-family: Arial, sans-serif;
+  text-decoration: none;
+  margin-top: 60px;
+  transition: transform 0.5s;
+  animation-name: loadingAnim;
+  animation-duration: .5s;
+  animation-timing-function: ease-in-out;
+}
+
+.popup-close:hover {
+  border: 2px solid #9D8CC0;
+  background-color: #6B4E98;
+  transform: scale(1.05); /* Increase scale on hover (adjust as needed) */
+  color: #FFFFFF;
+  transition: background-color 0.3s ease, transform 0.3s ease; /* Add transition for smooth color and transform change */
+}
+
+.popup-container {
+  display: flex; /* Add this line */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+  /* rest of your styles */
+}
+
+.popup-container.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+.level {
+  background: #1a1a1a;
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.level:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.level-content {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.rank {
+  font-size: 24px;
+  font-weight: bold;
+  color: #fff;
+  background: #333;
+  padding: 8px 12px;
+  border-radius: 6px;
+  min-width: 40px;
+  text-align: center;
+}
+
+.level-info h3 {
+  margin: 0;
+  color: #dac1ff;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.level-info p {
+  margin: 0;
+  color: #dac1ff;
+  font-size: 14px;
+}
+
+.video-link {
+  display: inline-block;
+  margin-top: 8px;
+  color: #4a9eff;
+  text-decoration: none;
+}
+
+.video-link:hover {
+  text-decoration: underline;
+}
+
+/* Hide audio controls by default, show on hover */
+audio {
+  display: none;
+}
+
+.level:hover audio {
+  display: block;
+  margin-top: 8px;
+  width: 100%;
+}
+
+@keyframes loadingAnim {
+  0% {
+    transform: translateY(0px);
+    filter: opacity(0);
+  }
+  25% {
+    transform: translateY(0px);
+    filter: opacity(100%);
+  }
+}
+
+/* Add this to your existing CSS */
+.popup-song {
+    background-color: #4B2D73;
+    color: #FFFFFF;
+    padding: 8px 16px;
+    border: 2px solid #6B4E98;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.popup-song:hover {
+    border: 2px solid #9D8CC0;
+    background-color: #6B4E98;
+    transform: scale(1.05);
+    color: #FFFFFF;
+}
+
+/* Add the gradient animation */
+@keyframes gradientBG {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+
+/* Update the sidebar colors */
+.sidebar {
+    background: linear-gradient(to top, #2D1B40, #4B2D73);
+}
+
+/* Update text colors */
+.level-name {
+    color: #dac1ff;
+}
+
+/* Update the info box */
+.text-box2 {
+    background: rgba(255, 255, 255, 0.95);
+    color: #dac1ff;
+    border: 2px solid #6B4E98;
+}
+
+/* Add a subtle glow effect to list items */
+.list-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(218, 193, 255, 0.1),  /* #dac1ff with low opacity */
+        transparent
+    );
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+    }
+    20% {
+        left: 100%;
+    }
+    100% {
+        left: 100%;
+    }
+}

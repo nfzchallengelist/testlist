@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="middle2.css">
+  <link rel="stylesheet" href="widget.css">
+  <title>No Finley Zone Challenge List</title>
+  <link rel="icon" type="image/x-icon" href="3sicon.png">
+  <script src="script4.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column; /* Change the flex-direction to column */
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%; /* Full width of the screen */
+      background: linear-gradient(to top, #0b0c0c, #18191a);
+      padding: 15px;
+      box-shadow: 0px 0px 12px 12px rgba(0, 0, 0, 0.2);
+      box-sizing: border-box;
+      display: inline-flex;
+      justify-content: center; /* Align content horizontally */
+      z-index: 4; /* Set a higher z-index to make it appear on top */
+      margin-bottom: 00px; /* Add a margin to the bottom to separate it from the content */
+    }
+
+      .text-box {
+      background: #0e0e0e;
+      color: #6e6e6e;
+      padding: 0px;
+      z-index: 3;
+      width: 100%;
+      margin: 00px; /* Add margin to all sides */
+      text-align: center; /* Align the text to the right */
+      }
+
+    .content {
+      flex: 1;
+      padding: 20px;
+      position: relative; /* Add relative positioning to allow the content to be behind the sidebar */
+      z-index: 1; /* Set a lower z-index to ensure content is behind the sidebar */
+    }
+
+    .levels-button,
+    .leglist-button,
+    .stats-button {
+      background-color: #141414;
+      color: rgb(221, 221, 221);
+      padding: 10px 20px;
+      border: 2px solid #c7c7c7;
+      border-radius: 4px;
+      font-size: 16px;
+      cursor: pointer;
+      text-align: center;
+      font-family: Arial, sans-serif; /* Change the font family as needed */
+      text-decoration: none; /* Remove underline */
+      transition: background-color 0.3s ease, transform 0.3s ease; /* Add transition for smooth color and transform change */
+      font-weight: bold; /* Add font-weight: bold; for bold text */
+      display: block;
+      margin-bottom: 0px;
+      margin-left: 20px;
+      margin-right: 20px;
+      box-shadow: 0px 0px 3px 3px rgba(102, 102, 102, 0);
+    }
+
+    .levels-button:hover,
+    .leglist-button:hover,
+    .stats-button:hover {
+      border: 2px solid #636363;
+      background-color: #f2f2f2; /* Change to the desired hover background color */
+      transform: scale(1.05); /* Increase scale on hover (adjust as needed) */
+      color: rgb(5, 5, 5);
+    }
+
+    .levels-button:focus,
+    .leglist-button:focus,
+    .stats-button:focus {
+      outline: none;
+    }
+    
+    @keyframes loadingAnim {
+    0% {
+      transform: translateY(0px);
+      filter: opacity(0);
+    }
+    25% {
+      transform: translateY(0px);
+      filter: opacity(100%);
+    }
+  }
+
+    .text-box2 {
+    position: fixed; /* Set the position to fixed */
+    bottom: 30%;
+    left: 63%;
+    height: 330px;
+    width: 270px;
+    background: rgb(255, 255, 255);
+    color: #000000;
+    padding: 10px;
+    z-index: 2;
+    border-radius: 8px;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- Widget Container -->
+  <div class="popup-container" id="popup">
+    <div class="popup-content">
+      <h2 class="popup-title">Level Details</h2>
+      <p class="popup-info"><a id="popup-video" target="_blank">Watch on YouTube</a></p>
+      <p class="popup-info"><span id="popup-name" style="font-size: 40px;">Your Text Here</span></p>
+      <p class="popup-info">ID: <span id="popup-id"></span></p>
+      <p class="popup-info">Creator: <span id="popup-author"></span></p>
+      <p class="popup-info">Verifier: <span id="popup-verifier"></span></p>
+      <button class="popup-info"><span id="popup-song"></span></button>
+      <button class="popup-close" id="popup-close">Close</button>
+    </div>
+  </div>
+  <div class="sidebar">
+    <a href="levels.html" class="levels-button">Main List</a>
+    <a href="legacy.html" class="leglist-button">Legacy List</a>
+    <a href="stats.html" class="stats-button">Stats Viewer</a>
+  </div>
+  <div class="content">
+    <div class="middle" id="legacyList">
+      <!-- Your existing content goes here -->
+    </div>
+  </div>
+  <div class="text-box2">
+    <p style="text-align: center;">
+      <strong>List Commitees</strong>
+    </p>
+     <p style="text-align: center;">
+      List Editors: iamfinleyy, lunatism
+    </p>
+    
+    <p style="text-align: center;">
+      <em>List Developer: Mariner</em>
+    </p>
+    
+    <p style="text-align: center;">
+      &nbsp;
+    </p>
+    
+    <h2 style="text-align: center;">
+        Rules
+    </h2>
+    
+    <p style="text-align: center;">
+      have to be in no finley zone to submit challenge/record !!
+    </p>
+    
+    <p style="text-align: center;">
+      <em>youtube video of the verification needed to submit challenges mmmm</em>
+    </p>
+    
+    <p style="text-align: center;">
+      hiii :3
+    </p>
+    
+    <p style="text-align: center;">
+      <em>uhhhhhhhhh Good Morning, Lets Complete silly goober area</em>
+    </p>
+  </div>
+  <div class="text-box">
+    <p>©Mariner 2024</p>
+  </div>
+</body>
+</html>
