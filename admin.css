@@ -144,7 +144,43 @@ button:hover {
     display: flex;
     gap: 5px;
 }
+/* Add these styles to your existing CSS */
+.dragging {
+    opacity: 0.5;
+    background: #f0f0f0;
+}
 
+.pending-level-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin: 5px 0;
+    background: #e9ecef;
+    border-radius: 4px;
+    cursor: move;
+}
+
+.pending-level-item:hover {
+    background: #dee2e6;
+}
+
+.pending-level-item .handle {
+    margin-right: 10px;
+    cursor: move;
+}
+
+/* Drag indicator styles */
+.level-item {
+    transition: border-color 0.2s ease;
+}
+
+.level-item.drag-over-top {
+    border-top: 2px solid #007bff;
+}
+
+.level-item.drag-over-bottom {
+    border-bottom: 2px solid #007bff;
+}
 .edit-btn {
     padding: 4px 8px;
     background: #28a745;
