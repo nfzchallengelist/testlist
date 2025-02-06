@@ -33,6 +33,7 @@
     border-radius: 4px;
     padding: 10px;
     background: white;
+    counter-reset: level-counter;
 }
 
 .level-item {
@@ -43,6 +44,16 @@
     background: #f5f5f5;
     border-radius: 4px;
     cursor: move;
+    position: relative;
+}
+
+.level-item::before {
+    counter-increment: level-counter;
+    content: "#" counter(level-counter);
+    margin-right: 10px;
+    font-weight: bold;
+    color: #666;
+    min-width: 40px;
 }
 
 .level-item:hover {
@@ -145,4 +156,4 @@ button:hover {
 
 .edit-btn:hover {
     background: #218838;
-} 
+}
