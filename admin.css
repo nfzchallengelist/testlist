@@ -33,7 +33,6 @@
     border-radius: 4px;
     padding: 10px;
     background: white;
-    counter-reset: level-counter;
 }
 
 .level-item {
@@ -44,16 +43,6 @@
     background: #f5f5f5;
     border-radius: 4px;
     cursor: move;
-    position: relative;
-}
-
-.level-item::before {
-    counter-increment: level-counter;
-    content: "#" counter(level-counter);
-    margin-right: 10px;
-    font-weight: bold;
-    color: #666;
-    min-width: 40px;
 }
 
 .level-item:hover {
@@ -144,43 +133,7 @@ button:hover {
     display: flex;
     gap: 5px;
 }
-/* Add these styles to your existing CSS */
-.dragging {
-    opacity: 0.5;
-    background: #f0f0f0;
-}
 
-.pending-level-item {
-    display: flex;
-    align-items: center;
-    padding: 10px;
-    margin: 5px 0;
-    background: #e9ecef;
-    border-radius: 4px;
-    cursor: move;
-}
-
-.pending-level-item:hover {
-    background: #dee2e6;
-}
-
-.pending-level-item .handle {
-    margin-right: 10px;
-    cursor: move;
-}
-
-/* Drag indicator styles */
-.level-item {
-    transition: border-color 0.2s ease;
-}
-
-.level-item.drag-over-top {
-    border-top: 2px solid #007bff;
-}
-
-.level-item.drag-over-bottom {
-    border-bottom: 2px solid #007bff;
-}
 .edit-btn {
     padding: 4px 8px;
     background: #28a745;
@@ -192,4 +145,13 @@ button:hover {
 
 .edit-btn:hover {
     background: #218838;
+} 
+
+.drop-highlight {
+    border-top: 2px solid blue; /* Or any style you prefer */
+}
+
+.level-item {
+    /* Other styles */
+    transition: border-top 0.2s ease; /* Smooth transition for the highlight */
 }
