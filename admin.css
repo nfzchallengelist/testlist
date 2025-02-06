@@ -147,11 +147,30 @@ button:hover {
     background: #218838;
 } 
 
-.drop-highlight {
-    border-top: 2px solid blue; /* Or any style you prefer */
+.level-item.dragging {
+    opacity: 0.5;
+}
+
+.level-item.drag-highlight-before::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #007bff;
+    top: -2px;
+}
+
+.level-item.drag-highlight-after::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #007bff;
+    bottom: -2px;
 }
 
 .level-item {
-    /* Other styles */
-    transition: border-top 0.2s ease; /* Smooth transition for the highlight */
+    position: relative;
 }

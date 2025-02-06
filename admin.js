@@ -98,7 +98,48 @@ function loadLevels() {
         });
 }
 
-// displayLevels function (Combined and improved)
+// Load pending levels function
+function loadPendingLevels() {
+    firebase.database().ref('pendingLevels').once('value')
+        .then((snapshot) => {
+            const pendingLevels = snapshot.val() || [];
+            displayPendingLevels(pendingLevels);
+        })
+        .catch((error) => {
+            console.error("Error loading pending levels:", error);
+        });
+}
+
+// Display pending levels
+function displayPendingLevels(pendingLevels) {
+    const pendingList = document.getElementById('pendingLevelList');
+    pendingList.innerHTML = '';
+
+    pendingLevels.forEach((level, index) => {
+        const item = document.createElement('div');
+        item.className = 'level-item';
+        item.draggable = true;
+        item.dataset.index = index;
+        item.dataset.level = JSON.stringify(level);
+        
+        item.innerHTML = `
+            <span class="handle">☰</span>
+            <span>${level.name} by ${level.author}</span>
+            <div class="level-actions">
+                <button class="delete-btn" onclick="removePendingLevel(${index})">×</button>
+            </div>
+        `;
+
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('dragleave', handleDragLeave);
+        item.addEventListener('dragend', handleDragEnd);
+
+        pendingList.appendChild(item);
+    });
+}
+
+// Modify the existing event listeners
 function displayLevels(levels) {
     const levelList = document.getElementById('levelList');
     levelList.innerHTML = '';
@@ -109,7 +150,7 @@ function displayLevels(levels) {
         item.draggable = true;
         item.dataset.index = index;
         item.dataset.level = JSON.stringify(level);
-
+        
         item.innerHTML = `
             <span class="handle">☰</span>
             <span>${level.name} by ${level.author}</span>
@@ -121,13 +162,13 @@ function displayLevels(levels) {
 
         item.addEventListener('dragstart', handleDragStart);
         item.addEventListener('dragover', handleDragOver);
-        item.addEventListener('drop', handleDrop);
+        item.addEventListener('dragleave', handleDragLeave);
         item.addEventListener('dragend', handleDragEnd);
+        item.addEventListener('drop', handleDrop);
 
         levelList.appendChild(item);
     });
 }
-
 
 // Edit level function
 function editLevel(index) {
@@ -194,28 +235,48 @@ function cancelEdit() {
     loadLevels();
 }
 
-// Modified delete level function
 function deleteLevel(index) {
-    if (confirm('Are you sure you want to delete this level?')) {
-        const deleteButton = document.querySelector(`[data-index="${index}"] .delete-btn`);
-        deleteButton.disabled = true;
-        deleteButton.textContent = '...';
+    // Example of Firebase delete operation; make sure to adapt according to your setup
+    const levelList = document.getElementById('levelList');
+    const levelToDelete = levelList.children[index];
 
-        firebase.database().ref('levels').once('value')
-            .then((snapshot) => {
-                const levels = snapshot.val() || [];
-                levels.splice(index, 1);
-                return firebase.database().ref('levels').set(levels);
-            })
-            .then(() => {
-                showError('Level deleted successfully');
-                loadLevels();
-            })
-            .catch((error) => {
-                showError('Error deleting level: ' + error.message);
-                deleteButton.disabled = false;
-                deleteButton.textContent = '×';
-            });
+    if (!levelToDelete) {
+        console.error(`Level at index ${index} does not exist.`);
+        return; // Exit the function if level does not exist
+    }
+    
+    // Assume levels is an array in your database reference
+    const levelId = JSON.parse(levelToDelete.dataset.level).id; // Assuming you stored the level data in dataset
+    
+    firebase.database().ref('levels/' + levelId).remove()
+        .then(() => {
+            console.log("Level Deleted Successfully.");
+            levelList.removeChild(levelToDelete); // Remove from the UI
+        })
+        .catch(error => {
+            console.error("Error deleting level: ", error);
+        });
+        setTimeout(() => {
+            levelList.removeChild(levelToDelete); // Ensuring this runs separate from the main call
+        }, 0);
+}
+
+async function deleteLevel(index) {
+    const levelList = document.getElementById('levelList');
+    const levelToDelete = levelList.children[index];
+
+    if (!levelToDelete) {
+        console.error(`Level at index ${index} does not exist.`);
+        return;
+    }
+    const levelId = JSON.parse(levelToDelete.dataset.level).id;
+
+    try {
+        await firebase.database().ref('levels/' + levelId).remove();
+        console.log("Level Deleted Successfully.");
+        levelList.removeChild(levelToDelete);
+    } catch (error) {
+        console.error("Error deleting level: ", error);
     }
 }
 
@@ -241,7 +302,7 @@ function saveOrder() {
         });
 }
 
-// Modified add new level function
+// Modify new level form submission
 document.getElementById('newLevelForm').addEventListener('submit', function(e) {
     e.preventDefault();
     
@@ -255,26 +316,44 @@ document.getElementById('newLevelForm').addEventListener('submit', function(e) {
         type: document.getElementById('levelType').value
     };
 
-    firebase.database().ref('levels').once('value')
+    // Add to pending levels in Firebase
+    firebase.database().ref('pendingLevels').once('value')
         .then((snapshot) => {
-            const levels = snapshot.val() || [];
-            levels.push(newLevel);
-            return firebase.database().ref('levels').set(levels);
+            const pendingLevels = snapshot.val() || [];
+            pendingLevels.push(newLevel);
+            return firebase.database().ref('pendingLevels').set(pendingLevels);
         })
         .then(() => {
             this.reset();
-            loadLevels();
+            loadPendingLevels();
         })
         .catch((error) => {
-            alert('Error adding level: ' + error.message);
+            alert('Error adding pending level: ' + error.message);
         });
 });
 
-// Show admin panel
+// Remove pending level
+function removePendingLevel(index) {
+    firebase.database().ref('pendingLevels').once('value')
+        .then((snapshot) => {
+            const pendingLevels = snapshot.val() || [];
+            pendingLevels.splice(index, 1);
+            return firebase.database().ref('pendingLevels').set(pendingLevels);
+        })
+        .then(() => {
+            loadPendingLevels();
+        })
+        .catch((error) => {
+            alert('Error removing pending level: ' + error.message);
+        });
+}
+
+// Update showAdminPanel to load both current and pending levels
 function showAdminPanel() {
     document.getElementById('loginPanel').style.display = 'none';
     document.getElementById('adminPanel').style.display = 'block';
     loadLevels();
+    loadPendingLevels();
 }
 
 // Hide admin panel
@@ -283,74 +362,157 @@ function hideAdminPanel() {
     document.getElementById('adminPanel').style.display = 'none';
 }
 
-// ... (rest of your Firebase setup and functions)
+// Drag and drop functionality
+let draggedItem = null;
 
-// Remove the let declarations since they're already defined
-draggedItem = null;
-let dragStartIndex = -1;
+// Global variable to track the current drag highlight
+let currentHighlight = null;
 
 function handleDragStart(e) {
     draggedItem = this;
-    dragStartIndex = Number(this.dataset.index);
     e.dataTransfer.effectAllowed = 'move';
+    
+    // Optional: Add a visual cue that the item is being dragged
     this.classList.add('dragging');
-}
-
-function handleDragEnd(e) {
-    this.classList.remove('dragging');
-    draggedItem = null;
-    dragStartIndex = -1;
-    removeHighlight();
 }
 
 function handleDragOver(e) {
     e.preventDefault();
-    const dropTarget = findDropTarget(e.target);
-    if (dropTarget && dropTarget !== draggedItem) {
-        removeHighlight();
-        dropTarget.classList.add('drop-highlight');
+    e.dataTransfer.dropEffect = 'move';
+    
+    // Remove any previous highlights
+    if (currentHighlight) {
+        currentHighlight.classList.remove('drag-highlight-before', 'drag-highlight-after');
+    }
+    
+    // Determine if we're dragging above or below the current item
+    const boundingRect = this.getBoundingClientRect();
+    const offset = boundingRect.height / 2;
+    const dropPosition = e.clientY - boundingRect.top < offset ? 'before' : 'after';
+    
+    // Add highlight to show where the item will be inserted
+    if (dropPosition === 'before') {
+        this.classList.add('drag-highlight-before');
+        currentHighlight = this;
+    } else {
+        this.classList.add('drag-highlight-after');
+        currentHighlight = this;
     }
 }
 
+function handleDragLeave(e) {
+    // Remove highlights when dragging leaves an item
+    if (currentHighlight) {
+        currentHighlight.classList.remove('drag-highlight-before', 'drag-highlight-after');
+        currentHighlight = null;
+    }
+}
+
+function handleDragEnd(e) {
+    // Remove dragging class and any remaining highlights
+    if (draggedItem) {
+        draggedItem.classList.remove('dragging');
+    }
+    if (currentHighlight) {
+        currentHighlight.classList.remove('drag-highlight-before', 'drag-highlight-after');
+        currentHighlight = null;
+    }
+}
+
+// Modify the existing event listeners
+function displayLevels(levels) {
+    const levelList = document.getElementById('levelList');
+    levelList.innerHTML = '';
+
+    levels.forEach((level, index) => {
+        const item = document.createElement('div');
+        item.className = 'level-item';
+        item.draggable = true;
+        item.dataset.index = index;
+        item.dataset.level = JSON.stringify(level);
+        
+        item.innerHTML = `
+            <span class="handle">☰</span>
+            <span>${level.name} by ${level.author}</span>
+            <div class="level-actions">
+                <button class="edit-btn" onclick="editLevel(${index})">Edit</button>
+                <button class="delete-btn" onclick="deleteLevel(${index})">×</button>
+            </div>
+        `;
+
+        item.addEventListener('dragstart', handleDragStart);
+        item.addEventListener('dragover', handleDragOver);
+        item.addEventListener('dragleave', handleDragLeave);
+        item.addEventListener('dragend', handleDragEnd);
+        item.addEventListener('drop', handleDrop);
+
+        levelList.appendChild(item);
+    });
+}
+
+// Modify handleDrop to work with pending levels
 function handleDrop(e) {
     e.preventDefault();
-    const dropTarget = findDropTarget(e.target);
-    
-    if (dropTarget && dropTarget !== draggedItem) {
-        const dropIndex = Number(dropTarget.dataset.index);
-
+    if (this !== draggedItem) {
         firebase.database().ref('levels').once('value')
             .then((snapshot) => {
-                let levels = snapshot.val() || [];
+                const levels = snapshot.val() || [];
                 
-                if (dragStartIndex !== -1 && dropIndex !== -1 && dragStartIndex !== dropIndex) {
-                    const [movedItem] = levels.splice(dragStartIndex, 1);
-                    levels.splice(dropIndex, 0, movedItem);
-
+                if (draggedItem.closest('#pendingLevelList')) {
+                    // Dragging from pending levels to current levels
+                    const newLevel = JSON.parse(draggedItem.dataset.level);
+                    const droppedIdx = [...document.getElementsByClassName('level-item')].indexOf(this);
+                    
+                    // Add to current levels
+                    levels.splice(droppedIdx, 0, newLevel);
+                    
+                    // Remove from pending levels
+                    return firebase.database().ref('pendingLevels').once('value')
+                        .then((pendingSnapshot) => {
+                            const pendingLevels = pendingSnapshot.val() || [];
+                            const pendingIndex = pendingLevels.findIndex(level => 
+                                JSON.stringify(level) === JSON.stringify(newLevel)
+                            );
+                            
+                            if (pendingIndex !== -1) {
+                                pendingLevels.splice(pendingIndex, 1);
+                                return Promise.all([
+                                    firebase.database().ref('levels').set(levels),
+                                    firebase.database().ref('pendingLevels').set(pendingLevels)
+                                ]);
+                            }
+                        });
+                } else {
+                    // Regular reordering of current levels
+                    const draggedIndex = [...document.getElementsByClassName('level-item')].indexOf(draggedItem);
+                    const droppedIndex = [...document.getElementsByClassName('level-item')].indexOf(this);
+                    
+                    const [movedItem] = levels.splice(draggedIndex, 1);
+                    levels.splice(droppedIndex, 0, movedItem);
+                    
                     return firebase.database().ref('levels').set(levels);
                 }
             })
             .then(() => {
                 loadLevels();
+                loadPendingLevels();
             })
             .catch((error) => {
-                console.error("Drag and drop error:", error);
-                showError('Failed to reorder levels');
+                alert('Error updating levels: ' + error.message);
             });
     }
-    
-    removeHighlight();
 }
 
-function removeHighlight() {
-    document.querySelectorAll('.level-item').forEach(item => {
-        item.classList.remove('drop-highlight', 'dragging');
-    });
-}
 
-function findDropTarget(element) {
-    while (element && !element.classList.contains('level-item')) {
-        element = element.parentElement;
+
+// Update database security rules in Firebase Console:
+/*
+{
+  "rules": {
+    "levels": {
+      ".read": true,
+      ".write": "auth != null"
     }
-    return element;
+  }
 }
+*/ 

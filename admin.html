@@ -43,13 +43,16 @@
         <button onclick="logout()" class="logout-btn">Logout</button>
         
         <div class="admin-container">
+            <!-- Left side: Level list -->
             <div class="level-list-container">
                 <h3>Current Levels</h3>
                 <div id="levelList" class="sortable-list">
-                    </div>
+                    <!-- Levels will be loaded here by JavaScript -->
+                </div>
                 <button onclick="saveOrder()">Save Order</button>
             </div>
-
+    
+            <!-- Right side: Add new level form -->
             <div class="new-level-container">
                 <h3>Add New Level</h3>
                 <form id="newLevelForm">
@@ -65,14 +68,13 @@
                     </select>
                     <button type="submit">Add Level</button>
                 </form>
-                
-                <div id="pendingLevels" class="pending-levels">
-                    <h4>Pending Levels</h4>
-                    </div>
+                <div id="pendingLevelContainer">
+                    <h3>Pending Levels</h3>
+                    <div id="pendingLevelList" class="level-list"></div>
+                </div>
             </div>
         </div>
     </div>
-
     <script src="admin.js"></script>
 </body>
-</html>
+</html> 
